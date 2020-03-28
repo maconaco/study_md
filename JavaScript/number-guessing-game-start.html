@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>Number guessing game</title>
+
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
+
+      .lastResult {
+        color: white;
+        padding: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Number guessing game</h1>
+
+    <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.</p>
+
+    <div class="form">
+      <label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
+      <input type="submit" value="Submit guess" class="guessSubmit">
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+
+    <script>
+      // Your JavaScript goes here
+      let randomNumber = Math.floor(Math.random() * 100) + 1;
+      const guesses = document.querySelector('.guesses');
+      const lastResult = document.querySelector('.lastResult');
+      const lowOrHi = document.querySelector('.lowOrHi');
+      const guessSubmit = document.querySelector('.guessSubmit');
+      const guessField = document.querySelector('.guessField');
+      let guessCount = 1;
+      let resetButton;
+
+      // ページが読み込まれるとすぐ、focus()メソッドを呼び出す
+      // 入力フォームの<input>要素に対して自動的にカーソルを設定
+      guessField.focus();
+
+      function checkGuess() {
+        // userGuess = 現在のテキストフィールドに入力された値
+        // 組み込みのNumber()関数を呼び出して、テキストフィールドに入力された値が間違いなく数値であることを確認
+        let userGuess = Number(guessField.value);
+
+        // プレイヤーの初回の予想かどうかを判定している
+        if (guessCount === 1) {
+          guesses.textContent = '前回の予想: ';
+        }
+
+        // 予想が表示されるときにはスペースで区切られて表示される
+        guesses.textContent += userGuess + ' ';
+
+        // プレイヤーの予想が
+        // JavaScriptのコードの先頭で設定したランダムな数字を格納した
+        // randomNumber 変数の値と等しいかどうか調べている
+        if (userGuess === randomNumber) {
+          lastResult.textContent = 'おめでとう! 正解です!';
+          lastResult.style.backgroundColor = 'green';
+          lowOrHi.textContent = '';
+          setGameOver();
+
+        // プレイヤーが予想回数の上限に達したかどうかを調べている
+        } else if (guessCount === 10) {
+          lastResult.textContent = '!!!ゲームオーバー!!!';
+          setGameOver();
+
+         // プレイヤーは間違えてはいるものの、予想可能な上限には達していない場合
+        } else {
+          lastResult.textContent = '間違いです!';
+          lastResult.style.backgroundColor = 'red';
+          if(userGuess < randomNumber) {
+            lowOrHi.textContent='今の予想は小さすぎです!もっと大きな数字です。' ;
+          } else if(userGuess > randomNumber) {
+            lowOrHi.textContent = '今の予想は大きすぎです!もっと小さな数字です。';
+          }
+        }
+
+         // guessCount変数に1を加算して、プレイヤーの予想回数を数える
+        guessCount++;
+        guessField.value = '';
+        guessField.focus();
+      }
+
+      // 発生したことを知りたいイベントの種類: click
+      // イベントが発生した場合に実行するコード: checkGuess()
+      guessSubmit.addEventListener('click', checkGuess);
+
+      function setGameOver() {
+         // 入力できないようにしている
+        guessField.disabled = true;
+        guessSubmit.disabled = true;
+
+        // 新しい<button>要素を生成
+        // そのラベルに"新しいゲームを始める"という文言を設定
+        resetButton = document.createElement('button');
+        resetButton.textContent = '新しいゲームを始める';
+        document.body.appendChild(resetButton);
+
+        // resetGame()という関数の呼び出し
+        resetButton.addEventListener('click', resetGame);
+      }
+
+      // ゲームを起動したときの状態に完全にリセット
+      function resetGame() {
+        // guessCountに1を代入して元に戻す
+        guessCount = 1;
+
+        // 情報段落のすべてを消去
+        // <div class="resultParas">に含まれるすべての<p>要素を
+        // querySelectorAll()というメソッドを使用して取得
+        // そしてループを使用してその一つ一つの要素の中身を消去
+        var resetParas = document.querySelectorAll('.resultParas p');
+        for (var i = 0 ; i < resetParas.length ; i++) {
+          resetParas[i].textContent = '';
+        }
+
+        // リセットボタンをページから削除
+        resetButton.parentNode.removeChild(resetButton);
+
+        // 新しい予想が入力できるようにテキストフィールドを空にしてフォーカスを設定
+        guessField.disabled = false;
+        guessSubmit.disabled = false;
+        guessField.value = '';
+        guessField.focus();
+
+        // 最終結果を表示している lastResult 段落の背景色を消去します。
+        lastResult.style.backgroundColor = 'white';
+
+        // 同じ数字以外の数字でゲームができるように、新しいランダムな数字を再度生成
+        randomNumber = Math.floor(Math.random() * 100) + 1;
+      }
+
+    </script>
+  </body>
+</html>ß
